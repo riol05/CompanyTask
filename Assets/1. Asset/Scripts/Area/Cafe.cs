@@ -14,24 +14,44 @@ public class Cafe : Area
 
     public Transform activeArea;
     public Transform inActiveArea;
+    
+    public Transform chair;
+    public Transform trash;
 
-    void Start()
+    public ParticleSystem cleanParticle;
+    public ParticleSystem openParticle;
+    
+    private bool isOpen = false;
+
+    public override void Start()
     {
+        base.Start();
         state = ETableState.Normal;
     }
-
-    public override void CheckAreaIsFull()
+    public void WorkingNow(bool isOn)
     {
+        inActiveArea.gameObject.SetActive(isOn);
     }
 
-    public override void InteractOnArea()
+
+    public override void InteractArea()
     {
+        base.InteractArea();
     }
 
-    public override void ArrowActive()
+    public override void ArrowActive(bool isOn)
     {
+        base.ArrowActive(isOn);
     }
     public override void MoveNextArea()
     {
+    }
+    public override void ManagedByPlayer()
+    {
+        base.ManagedByPlayer();
+    }
+    public override void WaitForPlayer()
+    {
+        base.WaitForPlayer();
     }
 }

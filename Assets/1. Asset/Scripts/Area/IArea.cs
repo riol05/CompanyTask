@@ -4,8 +4,9 @@ using UnityEngine;
 
 public interface IArea
 {
-    void InteractOnArea();
-    void CheckAreaIsFull();
-    void ArrowActive();
-    void MoveNextArea();
+    void InteractArea(); // NPC 상호작용
+    void ArrowActive(bool ison); // Arrow Setactive
+    void MoveNextArea(); // NPC 상호작용
+    void ManagedByPlayer();
+    void WaitForPlayer();
 }

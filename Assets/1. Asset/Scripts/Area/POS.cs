@@ -6,24 +6,34 @@ public class POS : Area
 {
     public Transform laneForPay; // 계산줄
     public Transform laneForCafe; // 카페줄
+    public BillArea billArea;
 
     public Area nextAreaIsCafe; // 다음 행선지 카페// 나머지 한곳은 Exit
 
-    public override void ArrowActive()
+    public int breadCost;
+    public override void Start()
     {
-        throw new System.NotImplementedException();
+        base.Start();
     }
 
-    public override void CheckAreaIsFull()
+    public override void ArrowActive(bool ison)
     {
-        throw new System.NotImplementedException();
+        base.ArrowActive(ison);
     }
 
-    public override void InteractOnArea()
+    public override void InteractArea()
     {
-        throw new System.NotImplementedException();
+        billArea.posArea.InteractArea(breadCost);
+    }
+    public override void WaitForPlayer()
+    {
+        base.WaitForPlayer();   
     }
     public override void MoveNextArea()
     {
+    }
+    public override void ManagedByPlayer()
+    {
+        base.ManagedByPlayer();
     }
 }

@@ -4,29 +4,46 @@ using UnityEngine;
 
 public class Area : MonoBehaviour, IArea
 {
+    public bool isFilled; // Æ©Åä¸®¾ó ¿ë
+
     public float areaRange;
-    public int areaCount;
+    public int maxValue;
     public bool isFull;
     public Arrow arrow;
-
-    public Area nextArea;
-
-    public virtual void ArrowActive()
+    public int curAmount;
+    
+    public Area nextArea; // List?? Array??
+    public virtual void Start()
     {
-        throw new System.NotImplementedException();
+        isFilled = false;
+        isFull = false;
+        ManagedByPlayer();
+    }
+    public virtual void ArrowActive(bool isOn)
+    {
+        arrow.gameObject.SetActive(isOn);
+    }
+    public virtual void InteractArea()
+    {
     }
 
-    public virtual void CheckAreaIsFull()
+    public virtual void ManagedByPlayer()
     {
-        throw new System.NotImplementedException();
-    }
-
-    public virtual void InteractOnArea()
-    {
+        isFilled = false;
+        ArrowActive(isFilled);
     }
 
     public virtual void MoveNextArea()
     {
-        throw new System.NotImplementedException();
+    }
+
+    public virtual void WaitForPlayer()
+    {
+    }
+
+
+    public IEnumerator GetObjectAnimation()
+    {
+        yield return null;
     }
 }

@@ -53,20 +53,25 @@ public class SpawnManager : MonoBehaviour
     #region Spawn Object
     public Bill SpawnBill(Transform parent, Vector3 spawnPos)
     {
-        if(billsPoolList.Count <= 0) return null;
-
+        if(billsPoolList.Count == 0)
+        {
+            CreateObject();
+        }
         Bill bil = billsPoolList[0];
+        bil.gameObject.SetActive(true);
         billsPoolList.RemoveAt(0);
         bil.transform.parent = parent;
         bil.transform.position = spawnPos;
+        bil.canJump = true;
         return bil;
     }
 
     public Customer SpawnCustomers()
     {
-        if(customersPoolList.Count <= 0) return null;
+        if(customersPoolList.Count == 0) return null;
 
         Customer cus = customersPoolList[0];
+        cus.gameObject.SetActive(true);
         customersPoolList.RemoveAt(0);
         cus.transform.parent = customerSpawn;
         cus.transform.position = customerSpawn.position;
@@ -74,9 +79,10 @@ public class SpawnManager : MonoBehaviour
     }
     public Bread SpawnCroissants(Transform parent,Vector3 spawnPos)
     {
-        if (breadPoolList.Count <= 0) return null;
+        if (breadPoolList.Count == 0) return null;
 
         Bread crois = breadPoolList[0];
+        crois.gameObject.SetActive(true);
         breadPoolList.RemoveAt(0);
         crois.transform.parent = parent;
         crois.transform.position = spawnPos;
@@ -88,7 +94,10 @@ public class SpawnManager : MonoBehaviour
     public void DespawnBills(Bill bil)
     {
         if (billsPoolList.Count >= billInteger)
+        {
+            billsPoolList.Remove(bil);
             Destroy(bil.gameObject);
+        }
 
         else
         {
@@ -110,7 +119,7 @@ public class SpawnManager : MonoBehaviour
             cus.gameObject.SetActive(false);
         }
     }
-    public void DespawnCroissants(Bread croi)
+    public void DespawnBreads(Bread croi)
     {
         if (breadPoolList.Count >= breadInteger)
             Destroy(croi);

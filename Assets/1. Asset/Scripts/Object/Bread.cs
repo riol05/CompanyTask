@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Bread : MonoBehaviour
 {
@@ -8,34 +9,26 @@ public class Bread : MonoBehaviour
     // Y : 0.4 X5까지 Player
     // X : 0.5 X2  Z: 1.1 X 5 가능 Basket
     public int breadInPocket;
-
-    private Rigidbody rb;
-    
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();   
-    }
-    void Start()
-    {
-        GetFromOven();   
-    }
+    public float moveDistance;
 
     void Update()
     {
         
     }
 
+
     private void PutInBag()
     {
 
     }
 
-    public void GetFromOven()
+    public void GetFromOven(Vector3 dir)
     {
-        Vector3 moveDir = new Vector3(0,0,1);
-        moveDir *= 1;
-        rb.velocity = moveDir;
+        transform.DOJump(dir, 1f, 1, 0.2f);
+        //    .OnComplete(() =>
+        //{
+        //    SpawnManager.Instance.DespawnBreads(this);
+        //});
     }
 
-    
 }

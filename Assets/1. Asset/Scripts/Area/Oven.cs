@@ -1,38 +1,66 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Oven : Area
 {
-
-    private void Start()
-    {
-        EntranceCroissant();
-    }
+    public Bread breadPrefab;
     public Transform breadSpawnPos;
+    public Transform ovenEdge;
+    public Transform Basket;
 
-    public override void CheckAreaIsFull()
+    List<Bread> breadList;
+    private float breadTime;
+
+
+    public override void Start()
     {
-        throw new System.NotImplementedException();
+        base.Start();
+        breadList = new List<Bread>();
+    }
+    private void FixedUpdate()
+    {
+        breadTime += Time.deltaTime;
+        if(breadTime > 5)
+        {
+            breadTime = 0;
+            InteractArea();
+        }
     }
 
-    public override void InteractOnArea()
+    public override void InteractArea()
     {
-        throw new System.NotImplementedException();
+        if (curAmount == maxValue)
+        {
+            curAmount = maxValue;
+            return;
+        }
+        Bread crois = EntranceCroissant();
+        breadList.Add(crois);
+        crois.transform.DOMove(ovenEdge.position, 0.5f);
     }
 
-    public override void ArrowActive()
+    public override void ArrowActive(bool ison)
     {
-        throw new System.NotImplementedException();
+        base.ArrowActive(ison);
     }
 
-    public override void MoveNextArea()
+    public void ManagedByPlayer(Pocket pocket)
     {
+        base.ManagedByPlayer();
+
+        pocket.InActiveBread(curAmount);
+        
+
     }
 
 
-    private void EntranceCroissant()
+    private Bread EntranceCroissant()
     {
-        SpawnManager.Instance.SpawnCroissants(transform, breadSpawnPos.position);
+        return SpawnManager.Instance.SpawnCroissants(breadSpawnPos, breadSpawnPos.position);
     }
+
+
 }

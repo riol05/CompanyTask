@@ -1,32 +1,113 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
+using System.Collections;
+using TreeEditor;
+using DG.Tweening;
 
-public class Taking : Area
+public enum EMoneyArea
 {
+    Cafe,
+    POS
+}
+public class Taking : MonoBehaviour
+{
+    public bool isFilled; // Æ©Åä¸®¾ó ¿ë
+    
+    public float areaRange;
+    public int maxValue;
+    public Arrow arrow;
+
     public Transform spawnPos;
-    public Vector3 nextSpawnPos;
-    public override void ArrowActive()
-    {
-    }
+    private Vector3 nextSpawnPos;
+    private List<Bill> billList;
+    private Queue<Bill> billQue;
+    private int curBalance;
 
-    public override void CheckAreaIsFull()
-    {
-    }
+    public float x; 
+    public float y;
+    public float z;
 
-    public override void InteractOnArea()
+    void Start()
     {
+        billList = new List<Bill>();
+        isFilled = false;
+        ArrowActive(isFilled);
     }
-    public override void MoveNextArea()
+    
+    RaycastHit hit;
+    private void FixedUpdate()
     {
-    }
-
-    private void SetMoneyOnBoard(int i, Taking area)
-    {
-
-        for (int j = 0; j < i; j++)
+        Physics.SphereCast(transform.position, areaRange, transform.forward, out hit);
+        if(hit.collider.GetComponent<Player>())
         {
-            SpawnManager.Instance.SpawnBill(transform, nextSpawnPos); // 
+            if(isFilled)
+            {
+                ManagedByPlayer(hit.collider.GetComponent<Player>().pocket);
+            }
         }
     }
+
+    private void ArrowActive(bool ison)
+    {
+        arrow.gameObject.SetActive(ison);
+    }
+
+    public void CheckAreaIsFilled(bool isOn)
+    {
+        ArrowActive(isOn);
+    }
+
+    public void InteractArea(int i)
+    {
+        if(curBalance + i > maxValue)
+        {
+            curBalance = maxValue;
+            return;
+        }
+        CalcPosition calc = new CalcPosition(maxValue, transform.position, x, y, z);
+        List<Vector3> vecList = new List<Vector3>();
+
+        vecList = calc.SetBillPos(curBalance,i);
+        
+
+        foreach (Vector3 dir in vecList)
+        {
+            if (dir == vecList[vecList.Count - 1])
+                nextSpawnPos = dir;
+
+            billList.Add(SpawnManager.Instance.SpawnBill(spawnPos, dir));
+        }
+        
+        
+        isFilled = true;
+        ArrowActive(isFilled);
+        curBalance += i;
+    }
+    public void ManagedByPlayer(Pocket pocket)
+    {
+        isFilled = false;
+        ArrowActive(isFilled);
+
+        pocket.calculateBills(billList.Count);
+        curBalance = 0;
+
+        StartCoroutine(GetMoney(pocket));
+    }
+
+    IEnumerator GetMoney(Pocket pocket)
+    {
+        int j = billList.Count;
+        for (int i = j - 1; i >= 0; i--)
+        {
+            Bill bil = billList[i];
+            bil.GetFromGround(pocket.transform.position);
+            yield return new WaitForSeconds(0.1f);
+        }
+        billList.Clear();
+    }
 }
+
+
+
+

@@ -9,23 +9,25 @@ public enum ECustomer
     None,
     Bread,
     Table,
-    Cal,
+    Calc,
     Home
 }
 public class Customer : MonoBehaviour
 {
     public float speed;
-    public NavMeshAgent nmAgent;
-    public Animator animator;
     public GameObject uiState;
 
+    private LayerMask areaLayer;
     private Area nextArea;
+    private NavMeshAgent nmAgent;
+    private Animator anim;
 
-    ECustomer state;
+    public ECustomer state;
 
     private void Awake()
     {
         nmAgent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -35,14 +37,34 @@ public class Customer : MonoBehaviour
 
     void Update()
     {
+        
     }
 
-    private void Move()
+    public void Move(Vector3 dir) => nmAgent.SetDestination(dir);
+
+    private void WaitForTask(Vector3 dir)
     {
-        nmAgent.SetDestination(nextArea.transform.position);
+        Move(dir);
+
     }
-    private void WaitForPlayer()
+
+    private void TaskOver(Area area)
+    {
+        nextArea.InteractArea(); // 마무리하고 
+        
+        nextArea = area; // 다음 지역 준비
+        Move(nextArea.transform.position);
+
+        if (!nextArea.isFilled)
+        {
+            WaitForTask(nextArea.transform.position);
+        }
+    }
+    
+
+    private ECustomer ChangeState(ECustomer custState)
     {
 
+        return state;
     }
 }

@@ -1,16 +1,23 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
 public class Bill : MonoBehaviour
 {
-    // bills X : 0.55 Y : 0.1 Z : 0.35究 X  x5  Z  x5 Y  x公力茄
-    // Cafe Bill篮  X : -0.55 Y : 0.1 Z : 0.35究 X  x5  Z  x5 Y  x公力茄
     public int biilsOnBoard;
+    public bool canJump = false;
 
-    public void GetMoney()
+    public void GetFromGround(Vector3 dir)
     {
-        // dotween
+        if (canJump)
+        {
+            transform.DOJump(dir, 1f, 1, 0.2f).OnComplete(() =>
+                {
+                    canJump = false;
+                    SpawnManager.Instance.DespawnBills(this);
+                });
+        }
     }
-
 }
