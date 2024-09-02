@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour
+public class InputManager : MonoBehaviour // 디버그용
 {
 
     #region Singleton
@@ -23,9 +23,9 @@ public class InputManager : MonoBehaviour
     }
     #endregion
 
-    //[HideInInspector]
+    [HideInInspector]
     public Vector2 move;
-    //[HideInInspector]
+    [HideInInspector]
     public bool isMove;
 
     private void Awake()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
@@ -31,15 +32,14 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    public LayerMask player;
-    public LayerMask customer;
-    void Start()
-    {
-        
-    }
+    public LayerMask playerLayer;
+    public LayerMask customerLayer;
+    
+    public Transform mainCamera;
+    public TextMeshProUGUI moneyText;
 
-    void Update()
+    public void GetMoney(int i)
     {
-        
+        moneyText.text = i.ToString();
     }
 }

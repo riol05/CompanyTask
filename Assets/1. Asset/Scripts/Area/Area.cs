@@ -32,18 +32,12 @@ public class Area : MonoBehaviour, IArea
         isFilled = false;
         ArrowActive(isFilled);
     }
-
-    public virtual void MoveNextArea()
-    {
-    }
-
     public virtual void WaitForPlayer()
     {
     }
 
-
-    public IEnumerator GetObjectAnimation()
+    public virtual void MoveNextArea(Customer cust)
     {
-        yield return null;
+        throw new System.NotImplementedException();
     }
 }

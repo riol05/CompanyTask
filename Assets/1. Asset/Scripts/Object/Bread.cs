@@ -11,24 +11,50 @@ public class Bread : MonoBehaviour
     public int breadInPocket;
     public float moveDistance;
 
-    void Update()
+    private Rigidbody rb;
+    private void Awake()
     {
-        
+        rb = GetComponent<Rigidbody>();
     }
 
-
+    private void OnEnable()
+    {
+         rb.isKinematic = false;
+    }
     private void PutInBag()
     {
 
     }
 
-    public void GetFromOven(Vector3 dir)
+    public void GetFromOven(Vector3 dir, Transform parent)
     {
-        transform.DOJump(dir, 1f, 1, 0.2f);
-        //    .OnComplete(() =>
-        //{
-        //    SpawnManager.Instance.DespawnBreads(this);
-        //});
-    }
+        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
 
+        this.transform.parent = parent;
+        
+        Vector3 targetPos = new Vector3(parent.position.x, dir.y, parent.position.z);
+
+        transform.DOJump(targetPos, 2f, 1, 0.2f).OnComplete(() =>
+        {
+            Quaternion targetRotation = Quaternion.Euler(0, 90, 0);
+            this.transform.localRotation = targetRotation;
+            transform.localPosition = new Vector3(0,dir.y,0);
+            SoundManager.instance.PlaySound("GetObject");
+        });
+    }
+    public void PutOnPosition(Vector3 dir, Transform parent)
+    {
+        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
+
+        this.transform.parent = parent;
+
+        transform.DOJump(dir, 2f, 1, 0.2f).OnComplete(() =>
+        {
+            Quaternion targetRotation = Quaternion.Euler(0, 90, 0);
+            this.transform.localRotation = targetRotation;
+            SoundManager.instance.PlaySound("PutObject");
+        });
+    }
 }

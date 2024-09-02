@@ -10,8 +10,6 @@ public class CalcPosition
     public float y = 0;
     public float z = 0;
 
-
-
     public CalcPosition(int maxVal,Vector3 dir , float y)
     {
         maxValue = maxVal;
@@ -27,16 +25,13 @@ public class CalcPosition
         this.z = z;
     }
 
-    public Vector3 resetDir(Vector3 dir) => dir = Vector3.zero;
 
 
-
-
-    public List<Vector3> SetBillPos(int curCount,int plusCount)
+    public List<Vector3> SetBillPos(int curAmount,int plusAmount) // bills Position 계산 수식 함수
     {
         List<Vector3> list = new List<Vector3>();
 
-        if (curCount >= maxValue) // 중복 코드 확인
+        if (curAmount >= maxValue)
             return null;
         Vector3 targetDir = objectPos;
 
@@ -56,69 +51,70 @@ public class CalcPosition
             targetDir.z = objectPos.z;
         }
 
-        if (curCount != 0)
-            list.RemoveRange(0, curCount); // 중복된 앞쪽 요소 제거
+        if (curAmount != 0)
+            list.RemoveRange(0, curAmount); 
 
-        if (list.Count > plusCount )
-            list.RemoveRange(plusCount, list.Count - plusCount); // 포함되지 않은 뒤쪽 요소 제거
-
+        if (list.Count > plusAmount )
+            list.RemoveRange(plusAmount, list.Count - plusAmount);
 
         return list;
     }
 
 
-    public List<Vector3> SetBreadPos(int curCount, int count)
+    public List<Vector3> SetBreadPos(int curCount, int count) // Bread Position 계산 수식 함수
     {
         List<Vector3> list = new List<Vector3>();
 
-        if (curCount >= maxValue)
+        if (curCount > maxValue)
             return null;
 
-        for (int i = 0; i < maxValue; i++ )
+        for (int i = curCount; i < count + curCount; i++ )
         {
-            objectPos.y = objectPos.y + y* curCount;
+            objectPos.y = y* i;
             list.Add(objectPos);
         }
 
         return list;
     }
 
-    public List<Vector3> SetBasket(int curCount)
+    public List<Vector3> SetBasket(int plusAmount,int curAmount) // BreadPosition 계산 수식 함수 // Basket 클래스
     {
         List<Vector3> list = new List<Vector3>();
 
-        if (curCount >= maxValue)
+        if (curAmount >= maxValue)
             return null;
 
         Vector3 targetDir = objectPos;
 
-
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 5; j++)
         {
-            objectPos.z += z;
-            for (int k = 0; k < 2; k++)
+            objectPos.z += z * j;
+            for (int k = 0;k < 2; k++)
             {
-                objectPos.x += x;
+                objectPos.x += x* k;
                 list.Add(objectPos);
             }
-            targetDir = objectPos;
+            objectPos = targetDir;
         }
-        
-        if (curCount != 0)// 중복 제외
+       
+        if (curAmount != 0)
+            list.RemoveRange(0, curAmount);
+
+        if (list.Count > plusAmount)
+            list.RemoveRange(plusAmount, list.Count - plusAmount);
+        return list;
+    }
+    
+    public List<Vector3> SetCustomerLane() // PosArea Customer 줄 Position 계산 수식 함수
+    {
+        List<Vector3> list = new List<Vector3>();
+
+        for(int i = 0; i < maxValue; i++)
         {
-            for (int i = curCount; i < maxValue; i++)
-            {
-                list.RemoveAt(i);
-            }
+            objectPos.z += z * i;
+            list.Add(objectPos);
         }
 
         return list;
-    }
-    public Vector3 SetCustomerLane(int t)
-    {
-        Vector3 dir = Vector3.zero;
-        float y = -1.5f;
-
-        return dir;
     }
 }

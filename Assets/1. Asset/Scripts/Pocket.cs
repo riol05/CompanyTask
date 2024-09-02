@@ -1,47 +1,145 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class Pocket : MonoBehaviour
 {
-    public Bill billPrefab;
-
-    public Bread breadPrefab;
-
+    RaycastHit hit;
+    public LayerMask areaMask;
+    PlayerMove plMove;
     public Transform handPos;
+    public Transform maxText;
 
     public List<Bread> breadList;
     public int maxValue;
 
-    private int breadInteger;
-    public int billInteger;
+    public int breadAmount;
+    public int billAmount;
 
     public float breadHeight; // 0.4f
 
-    public void calculateBills(int i)
+    private float areaCoolDown;
+    private bool isStack;
+
+    public bool isTask;
+    private bool ismax;
+
+    private void Awake()
     {
-        billInteger += i;
+        plMove = GetComponent<PlayerMove>();
     }
 
-    public void InActiveBread(int i)
+    private void Start()
     {
-        breadInteger += i;
+        breadList = new List<Bread>();
+        maxText.gameObject.SetActive(false);
     }
 
-    public void StackingOnHand(int ovenAmount, List<Bread> crois)
+    private void FixedUpdate()
     {
-        List<Vector3> breadPosList = new List<Vector3>();
-
-        CalcPosition calc = new CalcPosition(maxValue, handPos.position, breadHeight);
-
-        breadPosList = calc.SetBreadPos(breadInteger,ovenAmount);
-
-        for (int j = breadInteger; j < maxValue; j++)
+        if(breadList.Count == 0 &&
+            isStack)
         {
-            crois[j].GetFromOven(breadPosList[j]);
-            breadList.Add(crois[j]);
+            isStack = false;
+            plMove.ChangeStackingState(isStack);
         }
 
+        if(breadAmount == maxValue&& !ismax)
+        {
+            ismax = true;
+            maxText.gameObject.SetActive(ismax);
+        }
+        else
+        {
+            ismax = false;
+            maxText.gameObject.SetActive(ismax);
+        }
 
+        areaCoolDown += Time.fixedDeltaTime;
+
+        if (Physics.Raycast(new Vector3(transform.position.x,transform.position.y+1.5f,transform.position.z),
+            transform.forward , out hit , 1.5f , areaMask))
+        {
+            if (areaCoolDown > 1f)
+            {
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+
+                if (distance < 4f)
+                {
+                    areaCoolDown = 0;
+
+                    if (hit.collider.GetComponent<Taking>())
+                    {
+                        hit.collider.GetComponent<Taking>().ManagedByPlayer(this);
+                    }
+                    else if (hit.collider.GetComponent<Basket>())
+                    {
+                        hit.collider.GetComponent<Basket>().ManagedByPlayer(this, breadList);
+                    }
+                    else if (hit.collider.GetComponent<Oven>())
+                    {
+                        hit.collider.GetComponent<Oven>().ManagedByPlayer(this);
+                    }
+                    else if( hit.collider.GetComponent<POS>())
+                    {
+                        hit.collider.GetComponent<POS>().ManagedByPlayer(this);
+                    }
+
+                    if (hit.collider.GetComponent<Cafe>())
+                    {
+                        hit.collider.GetComponent<Cafe>().ManagedByPlayer(this);
+                        areaCoolDown = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    public void calculateBills(int i)
+    {
+        billAmount += i;
+        GameManager.Instance.GetMoney(billAmount);
+    }
+
+    public void StackingOnHand(int ovenAmount, List<Bread> crois, bool isFilled)
+    {
+        if(breadAmount >= maxValue)
+        {
+            breadAmount = maxValue;
+            return;
+        }
+        int needAmount = maxValue - breadAmount;
+        
+        int takeAmount = ovenAmount - needAmount < 0 ? ovenAmount : needAmount;
+
+        StartCoroutine(SetOnCroisRoutine(takeAmount, crois, isFilled));
+    }
+
+    IEnumerator SetOnCroisRoutine(int takeAmount, List<Bread> crois, bool isfilled)
+    {
+
+        CalcPosition calc = new CalcPosition(maxValue, handPos.position, breadHeight);
+        List<Vector3> breadPosList = calc.SetBreadPos(breadAmount, takeAmount);
+
+        isStack = true;
+        plMove.ChangeStackingState(isStack);// stacking animation 관련 함수 TODO : 다시 false 해줄것
+
+        int i = 0;
+        for (int j = breadAmount; j < takeAmount + breadAmount; j++)
+        {
+            Bread bread = crois[0];
+            crois.Remove(bread);
+            breadList.Add(bread);
+            bread.GetFromOven(breadPosList[i], handPos);
+            yield return new WaitForSeconds(0.3f);
+            i++;
+        }
+        breadAmount += takeAmount;
+        if(crois.Count > 0)
+        {
+            isfilled = true;
+        }
     }
 }

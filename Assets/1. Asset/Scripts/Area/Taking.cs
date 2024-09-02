@@ -5,11 +5,6 @@ using System.Collections;
 using TreeEditor;
 using DG.Tweening;
 
-public enum EMoneyArea
-{
-    Cafe,
-    POS
-}
 public class Taking : MonoBehaviour
 {
     public bool isFilled; // Æ©Åä¸®¾ó ¿ë
@@ -35,18 +30,18 @@ public class Taking : MonoBehaviour
         ArrowActive(isFilled);
     }
     
-    RaycastHit hit;
-    private void FixedUpdate()
-    {
-        Physics.SphereCast(transform.position, areaRange, transform.forward, out hit);
-        if(hit.collider.GetComponent<Player>())
-        {
-            if(isFilled)
-            {
-                ManagedByPlayer(hit.collider.GetComponent<Player>().pocket);
-            }
-        }
-    }
+    //RaycastHit hit;
+    //private void FixedUpdate()
+    //{
+    //    Physics.SphereCast(transform.position, areaRange, transform.forward, out hit);
+    //    if(hit.collider.GetComponent<Pocket>())
+    //    {
+    //        if(isFilled)
+    //        {
+    //            ManagedByPlayer(hit.collider.GetComponent<Pocket>());
+    //        }
+    //    }
+    //}
 
     private void ArrowActive(bool ison)
     {
@@ -79,20 +74,22 @@ public class Taking : MonoBehaviour
             billList.Add(SpawnManager.Instance.SpawnBill(spawnPos, dir));
         }
         
-        
         isFilled = true;
         ArrowActive(isFilled);
         curBalance += i;
+        
     }
     public void ManagedByPlayer(Pocket pocket)
     {
-        isFilled = false;
-        ArrowActive(isFilled);
+        if (isFilled)
+        {
+            isFilled = false;
+            ArrowActive(isFilled);
 
-        pocket.calculateBills(billList.Count);
-        curBalance = 0;
-
-        StartCoroutine(GetMoney(pocket));
+            pocket.calculateBills(billList.Count);
+            curBalance = 0;
+            StartCoroutine(GetMoney(pocket));
+        }
     }
 
     IEnumerator GetMoney(Pocket pocket)

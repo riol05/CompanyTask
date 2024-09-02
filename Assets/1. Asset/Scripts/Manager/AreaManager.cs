@@ -4,22 +4,35 @@ using UnityEngine;
 
 public class AreaManager : MonoBehaviour
 {
-    public Area cafeArea;
-    public Area exitArea;
-    public Area basketArea;
-    public Area ovenArea;
-    public Area posArea;
+    #region Singleton
+
+    public static AreaManager Instance
+    {
+        get
+        {
+            if (instance == null)
+                return null;
+
+            return instance;
+        }
+    }
+
+    private static AreaManager instance;
+    private void Awake()
+    {
+        if (null == instance)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+            DestroyImmediate(this.gameObject);
+    }
+    #endregion
+    public Cafe cafeArea;
+    public Spawn SpawnArea;
+    public Basket basketArea;
+    public Oven ovenArea;
+    public POS posArea;
     public BillArea moneyArea;
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 }

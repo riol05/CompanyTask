@@ -6,7 +6,8 @@ public interface IArea
 {
     void InteractArea(); // NPC 상호작용
     void ArrowActive(bool ison); // Arrow Setactive
-    void MoveNextArea(); // NPC 상호작용
+    void MoveNextArea(Customer cust); // NPC 상호작용
     void ManagedByPlayer();
     void WaitForPlayer();
+
 }
