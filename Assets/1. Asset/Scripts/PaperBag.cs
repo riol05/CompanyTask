@@ -24,7 +24,8 @@ public class PaperBag : MonoBehaviour
 
     private void OnEnable()
     {
-        OpenBag();
+        closeBag.gameObject.SetActive(false);
+        openBag.gameObject.SetActive(true);
     }
     public void CloseBag()
     {

@@ -83,8 +83,9 @@ public class Basket : Area
         cust.TaskOver(nextArea);
     }
 
-    public void ManagedByPlayer(Pocket pocket, List<Bread> croisList)
+    public void ManagedByPlayer(Pocket pocket, List<Bread> croisList, bool isStack)
     {
+
         curAmount = breadList.Count;
         if (curAmount >= maxValue)
         {
@@ -97,10 +98,12 @@ public class Basket : Area
             return;
 
         pocket.breadAmount = BreadCount(pocket.breadAmount, vecList.Count);
-        StartCoroutine(SetBreadRoutine(vecList,croisList));
+        if(pocket.breadAmount == 0)
+        { isStack = false; }
+        StartCoroutine(SetBreadRoutine(vecList,croisList,isStack));
     }
 
-    IEnumerator SetBreadRoutine(List<Vector3> vecList, List<Bread> croisList)
+    IEnumerator SetBreadRoutine(List<Vector3> vecList, List<Bread> croisList,bool isStack)
     {
         int i = 0;
         for (int j = 0; j < vecList.Count; j++)

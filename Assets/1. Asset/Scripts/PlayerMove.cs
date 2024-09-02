@@ -24,27 +24,26 @@ public class PlayerMove : MonoBehaviour
     private Animator anim;
 
     #region AnimatorString
-    private string stack;
-    private string Idle;
-    private string Run;
+    private Dictionary<EAnimationStatus, string> animationString = new Dictionary<EAnimationStatus, string>();
 
-    private void AnimString()
+    enum EAnimationStatus
     {
-        stack = "Stack";
-        Idle = "Idle";
-        Run = "Run";
+        RUN,
+        IDLE,
+        STACK
     }
+
     #endregion
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-    }
-    private void Start()
-    {
-        AnimString(); // 애니메이션 관련 함수
-    }
 
+        animationString.Add(EAnimationStatus.RUN, "Run");
+        animationString.Add(EAnimationStatus.IDLE, "Idle");
+        animationString.Add(EAnimationStatus.STACK, "Stack");
+    }
+   
     private void FixedUpdate()
     {
         dir.x = joystick.Horizontal;
@@ -58,25 +57,43 @@ public class PlayerMove : MonoBehaviour
         Vector3 inputDir = new Vector3(-moveDir.x, 0, -moveDir.y);
         
         speed = moveDir != Vector2.zero ? 1 : 0;
-
-        if (speed > 0)
+        if(speed > 0)
         {
-            if (!anim.GetCurrentAnimatorStateInfo(0).IsName(Run))
-            {
-                print("123");
-                anim.SetTrigger(Run);
-            }
+            anim.SetBool(animationString[EAnimationStatus.RUN],true);
         }
         else
         {
-            if (!anim.GetCurrentAnimatorStateInfo(0).IsName(Idle))
-            {
-                print("123");
-                anim.SetTrigger(Idle);
-            }
+            anim.SetBool(animationString[EAnimationStatus.RUN], false);
         }
 
-        anim.SetBool(stack, isStacking);
+        //if (speed > 0)
+        //{
+        //    EAnimationStatus nowStatus = EAnimationStatus.RUN;
+
+        //    if (anim.GetBool(animationString[nowStatus]) == false)
+        //    {
+        //        anim.SetBool(animationString[nowStatus],true);
+        //        anim.SetBool(animationString[EAnimationStatus.IDLE], false);
+        //        Debug.Log("RUN!");
+        //    }
+        //}
+        //else
+        //{
+        //     EAnimationStatus nowStatus = EAnimationStatus.IDLE;
+
+        //     if (anim.GetBool(animationString[nowStatus]) == false)
+        //     {
+        //        anim.SetBool(animationString[nowStatus], true);
+        //        anim.SetBool(animationString[EAnimationStatus.RUN], false);
+        //        Debug.Log("IDLE!");
+        //     }
+        //}
+
+        anim.SetBool(animationString[EAnimationStatus.STACK], isStacking);
+
+        Debug.Log($"run : {anim.GetBool(animationString[EAnimationStatus.RUN])}," +
+            $"stack : {anim.GetBool(animationString[EAnimationStatus.STACK])}");
+
 
 
         if (moveDir == Vector2.zero)

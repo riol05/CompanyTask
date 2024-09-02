@@ -46,17 +46,6 @@ public class Pocket : MonoBehaviour
             plMove.ChangeStackingState(isStack);
         }
 
-        if(breadAmount == maxValue&& !ismax)
-        {
-            ismax = true;
-            maxText.gameObject.SetActive(ismax);
-        }
-        else
-        {
-            ismax = false;
-            maxText.gameObject.SetActive(ismax);
-        }
-
         areaCoolDown += Time.fixedDeltaTime;
 
         if (Physics.Raycast(new Vector3(transform.position.x,transform.position.y+1.5f,transform.position.z),
@@ -76,7 +65,7 @@ public class Pocket : MonoBehaviour
                     }
                     else if (hit.collider.GetComponent<Basket>())
                     {
-                        hit.collider.GetComponent<Basket>().ManagedByPlayer(this, breadList);
+                        hit.collider.GetComponent<Basket>().ManagedByPlayer(this, breadList,isStack);
                     }
                     else if (hit.collider.GetComponent<Oven>())
                     {
@@ -107,8 +96,16 @@ public class Pocket : MonoBehaviour
     {
         if(breadAmount >= maxValue)
         {
+            ismax = true;
+            maxText.gameObject.SetActive(true);
+
             breadAmount = maxValue;
             return;
+        }
+        if (breadAmount < maxValue)
+        {
+            ismax = false;
+            maxText.gameObject.SetActive(false);
         }
         int needAmount = maxValue - breadAmount;
         
@@ -119,12 +116,18 @@ public class Pocket : MonoBehaviour
 
     IEnumerator SetOnCroisRoutine(int takeAmount, List<Bread> crois, bool isfilled)
     {
-
+        if (breadList.Count == 0 && isStack)
+        {
+            isStack = false;
+            plMove.ChangeStackingState(isStack);
+        }
         CalcPosition calc = new CalcPosition(maxValue, handPos.position, breadHeight);
         List<Vector3> breadPosList = calc.SetBreadPos(breadAmount, takeAmount);
 
         isStack = true;
         plMove.ChangeStackingState(isStack);// stacking animation 관련 함수 TODO : 다시 false 해줄것
+        
+
 
         int i = 0;
         for (int j = breadAmount; j < takeAmount + breadAmount; j++)
@@ -137,7 +140,20 @@ public class Pocket : MonoBehaviour
             i++;
         }
         breadAmount += takeAmount;
-        if(crois.Count > 0)
+
+
+
+        if (breadAmount >= maxValue)
+        {
+            ismax = true;
+            maxText.gameObject.SetActive(true);
+        }
+        if (breadAmount < maxValue)
+        {
+            ismax = false;
+            maxText.gameObject.SetActive(false);
+        }
+        if (crois.Count > 0)
         {
             isfilled = true;
         }

@@ -82,7 +82,10 @@ public class Customer : MonoBehaviour
         #region 애니메이션
         if (!isTalking)
         {
-            anim.SetTrigger(nmAgent.isStopped ? idle : run);
+            if (nmAgent.isStopped)
+                anim.SetBool(run, false);
+            else
+                anim.SetBool(run, true);
         }
         else
             anim.SetTrigger(talking);
@@ -147,8 +150,7 @@ public class Customer : MonoBehaviour
         nmAgent.ResetPath();
         nmAgent.SetDestination(dir);
         targetPos = dir;
-        print(dir);
-    }
+    }   
 
     public void PutInBag(Vector3 dir)
     {
@@ -171,6 +173,8 @@ public class Customer : MonoBehaviour
 
     public void TaskOver(Area area)
     {
+        anim.SetBool(stack, isStacking ? true : false);
+
         nextArea = area; // 다음 지역 준비
         complete = false;
         isWaiting = false;
@@ -291,7 +295,7 @@ public class Customer : MonoBehaviour
         isStacking = false;
         complete = false;
         isWaiting = false;
-        anim.SetBool(stack, isStacking ? true : false);
+        
 
         needAmount = Random.Range(1, maxValue);
         isTakeOut = needAmount == 1 ? false : true;
